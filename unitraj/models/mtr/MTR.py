@@ -110,6 +110,7 @@ class MTREncoder(nn.Module):
 
         # build LLM module
         print(f'LLM module building')
+        self.llm = llm.LLM_module(self.model_cfg.D_MODEL)
 
         # build transformer encoder layers
         self.use_local_attn = self.model_cfg.get('USE_LOCAL_ATTN', False)
@@ -211,7 +212,7 @@ class MTREncoder(nn.Module):
         batch_offsets = get_batch_offsets(batch_idxs=batch_idxs, bs=batch_size).int()  # (batch_size + 1)
         batch_cnt = batch_offsets[1:] - batch_offsets[:-1]
 
-        '''修改'''
+        '''modify'''
         # 将数据移动到 GPU
         if torch.cuda.is_available():
             print("GPU is available.")
@@ -225,7 +226,7 @@ class MTREncoder(nn.Module):
         x_pos_stack = x_pos_stack.contiguous()
         batch_idxs = batch_idxs.contiguous()
         batch_offsets = batch_offsets.contiguous()
-        '''修改'''
+        '''modify'''
 
         index_pair = knn_utils.knn_batch_mlogk(
             x_pos_stack, x_pos_stack, batch_idxs, batch_offsets, num_of_neighbors
